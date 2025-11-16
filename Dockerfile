@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copy all project files
 COPY . /app
-
+COPY models /models
 # Install additional requirements if any
 RUN pip install --no-cache-dir -r requirements.txt || true
 
