@@ -1,17 +1,21 @@
-# Use official Rasa image (includes Python, TensorFlow, etc.)
 FROM rasa/rasa:3.6.20-full
 
-# Set working directory
+# Install git and git-lfs so LFS model files actually download
+USER root
+RUN apt-get update && apt-get install -y git git-lfs && git-lfs install
+
+# Set work directory
 WORKDIR /app
 
-# Copy all project files
+# Copy repo (LFS pointer files)
 COPY . /app
-COPY models /models
-# Install additional requirements if any
+
+# Pull LFS file contents
+RUN git lfs pull
+
+# Install requirements
 RUN pip install --no-cache-dir -r requirements.txt || true
 
-# Expose port (Railway will map this automatically)
 EXPOSE 5005
 
-# Start Rasa API server
 CMD ["rasa", "run", "--enable-api", "--cors", "*", "--port", "5005", "--host", "0.0.0.0"]
